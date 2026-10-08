@@ -12,6 +12,7 @@ sample_rate = 10000     # samples per second
 duration = 0.1          # seconds
 
 # Simulated electrical values
+nominal_voltage = 10.0
 voltage_rms_expected = 10.0     # volts
 current_rms_expected = 0.5      # amps
 phase_angle = 30                 # degrees
@@ -115,6 +116,22 @@ thd = (
     / fundamental_magnitude
 ) * 100
 
+# --------------------------------------------------
+# POWER QUALITY EVENT DETECTION
+# --------------------------------------------------
+
+# Define voltage thresholds relative to nominal voltage
+sag_threshold = 0.90 * nominal_voltage
+swell_threshold = 1.10 * nominal_voltage
+
+# Classify the measured voltage
+if voltage_rms < sag_threshold:
+    voltage_status = "VOLTAGE SAG DETECTED"
+elif voltage_rms > swell_threshold:
+    voltage_status = "VOLTAGE SWELL DETECTED"
+else:
+    voltage_status = "NORMAL"
+
 # Display results
 print("INTELLIGENT POWER QUALITY ANALYZER")
 print("----------------------------------")
@@ -156,6 +173,14 @@ print()
 print("TOTAL HARMONIC DISTORTION")
 print("-------------------------")
 print(f"THD: {thd:.2f}%")
+
+print()
+print("POWER QUALITY STATUS")
+print("--------------------")
+print(f"Measured Voltage: {voltage_rms:.3f} V RMS")
+print(f"Sag Threshold: {sag_threshold:.3f} V")
+print(f"Swell Threshold: {swell_threshold:.3f} V")
+print(f"Status: {voltage_status}")
 
 # Plot voltage waveform
 plt.figure()
