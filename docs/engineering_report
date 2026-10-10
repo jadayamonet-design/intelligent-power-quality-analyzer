@@ -1,0 +1,400 @@
+
+# Intelligent Power Quality Analyzer
+
+**Technical Engineering Report**  
+**Disciplines:** Electrical Engineering and Computer Engineering  
+**Hardware:** STM32 NUCLEO-F446RE  
+**Software:** Embedded C, Python, STM32CubeIDE, Visual Studio Code  
+
+## 1. Introduction
+
+Electrical power quality is an important factor in the reliability, safety, and performance of electrical and electronic systems. Voltage disturbances, harmonic distortion, and fluctuations in electrical operating conditions can affect equipment efficiency, system stability, and overall performance.
+
+The Intelligent Power Quality Analyzer is a prototype embedded monitoring system developed to demonstrate the integration of electrical measurement, microcontroller-based data acquisition, serial communication, and software-based power-quality analysis.
+
+The system uses an STM32 NUCLEO-F446RE microcontroller to acquire real low-voltage DC measurements through its analog-to-digital converter (ADC). These measurements are transmitted to a Python application, which displays the incoming data on a real-time graphical dashboard and automatically records measurements for later analysis.
+
+The dashboard also incorporates simulated AC voltage and current waveforms, electrical power calculations, frequency-domain visualization, and power-quality event indicators. These simulated functions demonstrate the intended analytical capabilities of a future expanded system; they are not measurements of a live AC power source.
+
+This project demonstrates practical skills in embedded C programming, circuit implementation, analog-to-digital conversion, serial communication, Python development, data visualization, and hardware-software integration.
+
+
+
+## 2. Project Objectives
+
+The primary objective of the Intelligent Power Quality Analyzer is to develop and evaluate a prototype embedded system that integrates physical voltage measurements with real-time software monitoring and simulated power-quality analysis.
+
+The specific project objectives are:
+
+1. **Microcontroller-Based Data Acquisition:** Configure the STM32 NUCLEO-F446RE to acquire analog voltage signals using its 12-bit analog-to-digital converter (ADC).
+
+2. **Embedded Firmware Development:** Develop firmware in Embedded C to initialize the required microcontroller peripherals, process ADC measurements, and transmit measurement data.
+
+3. **Serial Communication:** Establish reliable communication between the NUCLEO and a computer using UART serial communication.
+
+4. **Real-Time Data Visualization:** Develop a Python graphical dashboard that displays live voltage measurements and updates as the analog input changes.
+
+5. **Automated Data Logging:** Implement CSV data logging to record measurement timestamps, ADC readings, and calculated voltage values for subsequent analysis.
+
+6. **Simulated Power-Quality Analysis:** Incorporate simulated AC voltage and current waveforms, electrical power parameters, harmonic analysis, and voltage disturbance indicators.
+
+7. **System Integration and Verification:** Test the complete hardware-to-software measurement process and verify the expected ADC and voltage ranges.
+
+8. **Engineering Documentation:** Document the system architecture, implementation, experimental results, limitations, and opportunities for future development.
+
+### 2.1 Expected Outcomes
+
+The completed prototype is expected to demonstrate successful acquisition of low-voltage DC signals across approximately 0–3.3 V, corresponding to ADC readings from 0 to 4095.
+
+The Python application should display live measurements, respond to changes in the physical input, and automatically save data for analysis.
+
+The simulated AC analysis features serve as a foundation for future development of a power-quality monitoring system incorporating isolated AC voltage and current sensors.
+
+
+
+## 3. System Architecture
+
+The Intelligent Power Quality Analyzer uses a hardware-software architecture that combines microcontroller-based voltage acquisition, serial data transmission, real-time visualization, and simulated power-quality analysis.
+
+### 3.1 Hardware Architecture
+
+The hardware consists of an STM32 NUCLEO-F446RE development board, a breadboard, a potentiometer, jumper wires, and a USB cable.
+
+The potentiometer acts as an adjustable low-voltage DC signal source. Its outer terminals are connected to the NUCLEO's 3.3 V supply and ground, while its center terminal (wiper) is connected to analog input PA0 (A0).
+
+Adjusting the potentiometer changes the voltage applied to the analog input, allowing the system to demonstrate real-time measurement across approximately 0–3.3 V.
+
+The NUCLEO's integrated 12-bit ADC converts the analog input voltage into a digital value ranging from 0 to 4095.
+
+### 3.2 Embedded Firmware
+
+Embedded C firmware was developed in STM32CubeIDE using the main.c source file.
+
+The firmware configures ADC1 to sample analog input channel 0 and uses USART2 to transmit ADC measurements to the connected computer at 9600 baud.
+
+The firmware repeatedly acquires ADC samples and transmits the resulting digital readings through the NUCLEO's USB serial connection.
+
+### 3.3 Software Architecture
+
+The Python application receives the serial ADC readings and converts them into voltage values using the following relationship:
+
+    Voltage (V) = (ADC Reading / 4095) × 3.3
+
+The measured voltage is displayed on the dashboard alongside the raw ADC reading and a continuously updating voltage graph.
+
+The application also records timestamps, ADC readings, and calculated voltages in a CSV file.
+
+In addition to the real DC measurements, the dashboard generates simulated AC waveforms and displays calculated power parameters, frequency-domain information, and power-quality event indicators.
+
+These AC-related values are simulated and are not obtained from physical AC voltage or current sensors.
+
+### 3.4 Data Flow
+
+The measurement and visualization process follows this sequence:
+
+1. The potentiometer produces an adjustable DC voltage.
+2. The NUCLEO samples the voltage through ADC1.
+3. The ADC converts the analog voltage into a 12-bit digital value.
+4. USART2 transmits the ADC reading to the computer.
+5. Python receives and processes the serial data.
+6. The dashboard displays the live voltage and ADC reading.
+7. The application records the measurements in a CSV file.
+
+The simulated AC analysis operates separately from the physical DC measurement path.
+
+
+
+## 4. Hardware Design and Implementation
+
+### 4.1 Hardware Components
+
+The prototype was constructed using the following components:
+
+| Component | Purpose |
+|-----------|---------|
+| STM32 NUCLEO-F446RE | Microcontroller for analog voltage acquisition and serial communication |
+| Breadboard | Provides a platform for assembling the measurement circuit |
+| Potentiometer | Generates an adjustable DC voltage input |
+| Jumper Wires | Connect the potentiometer to the NUCLEO |
+| USB Cable | Supplies power and provides communication with the computer |
+| Laptop Computer | Runs the Python monitoring dashboard and development software |
+
+### 4.2 Circuit Connections
+
+The potentiometer was connected to the STM32 NUCLEO-F446RE using three electrical connections:
+
+1. One outer terminal of the potentiometer was connected to the NUCLEO's 3.3 V output.
+2. The opposite outer terminal was connected to the NUCLEO's ground (GND).
+3. The center terminal (wiper) was connected to analog input PA0 (A0).
+
+The potentiometer functions as an adjustable voltage divider. Rotating its shaft changes the voltage at the center terminal, providing a variable analog signal to the microcontroller.
+
+The input voltage remains within the nominal 0–3.3 V ADC measurement range.
+
+### 4.3 Analog-to-Digital Conversion
+
+The STM32 NUCLEO-F446RE uses a 12-bit ADC to convert the potentiometer's analog voltage into a digital measurement.
+
+The ADC provides 4096 possible digital codes, ranging from 0 to 4095.
+
+The Python application calculates the corresponding voltage using:
+
+    V = (ADC / 4095) × 3.3 V
+
+Where:
+
+- V = calculated input voltage in volts
+- ADC = digital reading produced by the microcontroller
+- 4095 = maximum 12-bit ADC code
+- 3.3 V = nominal ADC reference voltage
+
+For example, an ADC reading of 2048 corresponds to approximately:
+
+    V = (2048 / 4095) × 3.3
+
+    V ≈ 1.650 V
+
+This conversion allows the Python dashboard to display the measured analog input in engineering units.
+
+### 4.4 Hardware Safety
+
+The prototype operates exclusively with low-voltage DC signals supplied by the NUCLEO development board.
+
+No mains AC voltage was connected to the breadboard or microcontroller.
+
+Future development involving AC power measurements would require appropriately rated isolated voltage and current sensing circuitry to protect the equipment and operator.
+
+
+
+## 5. Firmware and Software Development
+
+### 5.1 Development Environment
+
+The Intelligent Power Quality Analyzer was developed using the following programming languages and software tools:
+
+| Tool | Application |
+|------|-------------|
+| STM32CubeIDE | Embedded firmware development, compilation, and programming |
+| Embedded C | Microcontroller configuration, ADC acquisition, and serial transmission |
+| Visual Studio Code | Python software development and project organization |
+| Python | Serial communication, signal processing, visualization, and data logging |
+| PySerial | Communication with the NUCLEO through a serial COM port |
+| NumPy | Numerical calculations and simulated signal generation |
+| Matplotlib | Signal visualization and graphical plotting |
+| Tkinter | Graphical user interface development |
+| GitHub | Version control and project documentation |
+
+### 5.2 Embedded C Firmware
+
+The microcontroller firmware was implemented in the main.c source file.
+
+The firmware initializes the required hardware peripherals, including ADC1 and USART2.
+
+ADC1 is configured to acquire analog voltage measurements from channel 0, corresponding to the PA0 analog input pin.
+
+The ADC operates at 12-bit resolution, producing digital values from 0 to 4095.
+
+USART2 is configured for serial communication at 9600 baud.
+
+During operation, the firmware repeatedly performs the following sequence:
+
+1. Initiates an ADC conversion.
+2. Retrieves the digital ADC measurement.
+3. Formats the measurement for serial transmission.
+4. Transmits the reading through USART2.
+5. Repeats the acquisition process to provide continuous measurements.
+
+The NUCLEO's onboard ST-LINK USB interface provides the serial communication connection to the computer.
+
+### 5.3 Python Serial Communication
+
+The Python application uses the PySerial library to receive ADC measurements transmitted by the microcontroller.
+
+The application reads incoming serial data, interprets the ADC values, and converts them into corresponding voltage measurements.
+
+The measured voltage is calculated using:
+
+    V = (ADC / 4095) × 3.3 V
+
+The application continuously processes new readings, allowing the displayed voltage to respond to changes in the physical potentiometer position.
+
+### 5.4 Graphical User Interface
+
+The monitoring dashboard was developed using Python and Tkinter, with Matplotlib for graphical visualization.
+
+The final dashboard application is contained in dashboard_v3.py.
+
+The interface includes:
+
+- Live NUCLEO DC voltage measurements
+- Raw 12-bit ADC readings
+- Continuously updating DC voltage graph
+- Simulated AC voltage and current waveforms
+- Simulated electrical power measurements
+- Frequency-domain visualization
+- Power-quality status indicators
+- Simulated voltage sag and swell detection indicators
+
+The dashboard identifies its data sources to distinguish real hardware measurements from simulated AC signals.
+
+### 5.5 Automated Data Logging
+
+The software automatically records acquired measurements in a CSV file named nucleo_voltage_log.csv.
+
+Each recorded entry contains:
+
+- Measurement timestamp
+- Raw ADC reading
+- Calculated DC voltage
+
+The recorded measurements can be opened in spreadsheet applications for inspection, plotting, and subsequent analysis.
+
+### 5.6 Simulated AC Analysis
+
+In addition to physical DC measurements, the Python dashboard incorporates simulated AC voltage and current signals.
+
+The simulated analysis includes RMS voltage and current, active power, reactive power, apparent power, power factor, frequency, harmonic distortion, and power-quality status indicators.
+
+These functions demonstrate software-based analysis techniques that could be applied to actual AC measurements in a future version of the system.
+
+The current prototype does not directly measure AC voltage, AC current, or real electrical power.
+
+
+
+## 6. Experimental Testing and Results
+
+### 6.1 Testing Objectives
+
+Experimental testing was conducted to evaluate the functionality of the Intelligent Power Quality Analyzer prototype.
+
+The testing focused on verifying:
+
+- Analog voltage acquisition using the STM32 NUCLEO-F446RE
+- ADC response to changes in the potentiometer position
+- Serial communication between the NUCLEO and Python
+- Real-time dashboard updates
+- Automatic CSV data logging
+- Expected minimum and maximum measurement values
+
+### 6.2 Experimental Procedure
+
+The NUCLEO was connected to the computer through USB, and the Python dashboard was launched.
+
+The potentiometer was gradually rotated to vary the voltage applied to analog input PA0.
+
+The dashboard was observed to verify that the displayed voltage, ADC reading, and live voltage graph responded to changes in the physical input.
+
+The potentiometer was then adjusted toward both ends of its range to verify the minimum and maximum measurements.
+
+The automatically generated CSV file was inspected to confirm that timestamps, ADC readings, and calculated voltage values were recorded.
+
+### 6.3 Experimental Results
+
+The following results were obtained during testing:
+
+| Test | Observed Result | Status |
+|------|-----------------|--------|
+| Minimum DC voltage | Approximately 0.000 V | Passed |
+| Maximum DC voltage | 3.300 V | Passed |
+| Minimum ADC reading | 0 | Passed |
+| Maximum ADC reading | 4095 | Passed |
+| Serial communication | Live readings received by Python | Passed |
+| Dashboard response | Voltage display and graph updated | Passed |
+| Automatic data logging | Timestamped ADC and voltage data saved | Passed |
+| Continuous operation | Dashboard remained operational during testing | Passed |
+
+### 6.4 Measurement Analysis
+
+The measured voltage varied from approximately 0.000 V to 3.300 V as the potentiometer was adjusted.
+
+The corresponding ADC values ranged from 0 to 4095, consistent with the expected output range of a 12-bit analog-to-digital converter.
+
+At the maximum input setting, the ADC reached a digital value of 4095, corresponding to a calculated voltage of 3.300 V.
+
+At the minimum input setting, ADC readings approached zero, corresponding to approximately 0.000 V.
+
+The real-time dashboard successfully reflected changes in the physical analog input, demonstrating functional integration between the measurement circuit, embedded firmware, serial communication, and Python software.
+
+### 6.5 Data Logging Verification
+
+The CSV data file was inspected using Microsoft Excel.
+
+The file contained more than 1,600 recorded measurement entries, including timestamps, ADC readings, and calculated voltage values.
+
+The recorded values were consistent with the observed changes in the potentiometer position.
+
+This verified that the application was capable of storing acquired measurement data for later inspection and analysis.
+
+### 6.6 Testing Limitations
+
+The tests verified the expected operating range and functionality of the low-voltage DC measurement system.
+
+Measurement accuracy was not independently calibrated against a certified reference instrument.
+
+The simulated AC analysis features were displayed during operation but were not independently validated against physical AC measurements or calibrated test signals.
+
+Therefore, the experimental results establish successful operation of the DC data acquisition and monitoring prototype rather than full validation of a physical AC power-quality analyzer.
+
+
+
+## 7. Discussion, Limitations, and Future Improvements
+
+### 7.1 Discussion
+
+The Intelligent Power Quality Analyzer prototype successfully demonstrated the integration of embedded hardware and Python-based monitoring software.
+
+The STM32 NUCLEO-F446RE acquired real analog voltage measurements, transmitted digital readings through serial communication, and provided data for continuous visualization and automatic logging.
+
+Testing confirmed that the system responded to changes in the physical input and produced the expected 12-bit ADC range of 0–4095.
+
+The project demonstrated practical applications of electrical circuit design, embedded C programming, analog-to-digital conversion, serial communication, Python development, and system integration.
+
+### 7.2 Current Limitations
+
+Although the prototype successfully performs real-time DC voltage monitoring, several limitations remain:
+
+- The physical measurement system is limited to low-voltage DC signals between approximately 0 and 3.3 V.
+- AC voltage, current, and power parameters are simulated rather than physically measured.
+- Voltage sag, swell, and harmonic detection have not been independently validated.
+- Measurement accuracy has not been calibrated against a reference instrument.
+- The prototype uses a breadboard rather than a permanent circuit board.
+
+### 7.3 Future Improvements
+
+Future development could include:
+
+1. **Isolated AC Voltage Sensing:** Integrate appropriately rated isolated sensors to acquire real AC voltage waveforms.
+
+2. **Current Measurement:** Add isolated current sensing to support real electrical power calculations.
+
+3. **Advanced Power-Quality Detection:** Validate algorithms for voltage sags, swells, frequency variations, and harmonic distortion using controlled test signals.
+
+4. **Measurement Calibration:** Compare system readings against calibrated instruments to evaluate measurement accuracy.
+
+5. **Data Analytics:** Expand the software to generate automated reports, historical trends, and event summaries.
+
+6. **PCB Development:** Replace the breadboard with a custom printed circuit board for improved reliability and professional presentation.
+
+7. **Remote Monitoring:** Introduce wireless communication and remote dashboard access.
+
+### 7.4 Engineering Significance
+
+This project provides a foundation for developing more advanced embedded monitoring systems used in industrial automation, electrical power systems, equipment diagnostics, and energy management.
+
+The completed prototype demonstrates a functional hardware-to-software data acquisition pipeline and establishes a platform for future expansion into physical AC power-quality monitoring.
+
+
+
+## 8. Conclusion
+
+The Intelligent Power Quality Analyzer project successfully demonstrated the design, implementation, and testing of a microcontroller-based electrical monitoring prototype.
+
+Using the STM32 NUCLEO-F446RE, a variable DC input was acquired through a 12-bit analog-to-digital converter and transmitted to a Python application through serial communication.
+
+The developed dashboard provided real-time voltage visualization, ADC monitoring, and automatic data logging. Experimental testing verified the expected voltage range of approximately 0–3.3 V and ADC readings from 0 to 4095.
+
+The project also incorporated simulated AC waveforms, electrical power calculations, harmonic visualization, and power-quality indicators to demonstrate potential analytical capabilities for future development.
+
+Although physical AC power-quality monitoring remains a future objective, the completed prototype establishes a functional foundation for integrating electrical measurement hardware with embedded firmware and software-based analysis.
+
+Overall, this project strengthened practical engineering skills in circuit implementation, embedded C programming, microcontroller peripherals, Python development, data acquisition, serial communication, system testing, and technical problem-solving.
